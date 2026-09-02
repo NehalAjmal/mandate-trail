@@ -41,6 +41,7 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env               # then paste your free Gemini or Groq key into .env
 python data/seed/generate_dataset.py   # builds data/mandate_trail.db from scratch
+python run_pipeline.py             # processes the disputes and generates decisions/evidence
 pytest                             # all tests should pass before you run the app
 streamlit run app.py               # opens the dashboard at localhost:8501
 ```
@@ -54,6 +55,7 @@ mandate-trail/
 ├── data/               ← schema.sql, the synthetic data generator, the generated .db file
 ├── src/                ← rules_engine.py, evidence_writer.py, decision.py, metrics.py, db.py
 ├── app.py              ← the Streamlit dashboard, the only UI code in the repo
+├── run_pipeline.py     ← orchestrates the rule engine and evidence generation
 ├── tests/
 ├── requirements.txt
 ├── .env.example
@@ -62,4 +64,4 @@ mandate-trail/
 
 ## Current status
 
-Phase 0 complete — plumbing verified (LLM API, SQLite, venv). Building Phase 1 next.
+Phase 5 complete — App, backend, metrics, and audit logs are verified. Ready for pitch video (Phase 6).

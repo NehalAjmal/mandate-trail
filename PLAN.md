@@ -149,8 +149,8 @@ purpose, don't wait to stumble into it.
 - Fix `README.md`'s "Current status" line to reflect reality.
 
 **Exit criteria:**
-- [ ] Every value shown in the Detail screen can be traced to a specific `audit_log` row.
-- [ ] A completely clean clone + the README's quickstart commands work with no undocumented steps.
+- [x] Every value shown in the Detail screen can be traced to a specific `audit_log` row.
+- [x] A completely clean clone + the README's quickstart commands work with no undocumented steps.
 
 **STOP here. Confirm before starting Phase 6.**
 
