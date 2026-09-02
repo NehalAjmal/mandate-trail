@@ -1,0 +1,1 @@
+-- Phase 1 — schema goes here, matching BACKEND_SCHEMA.md exactly

@@ -1,0 +1,6 @@
+streamlit
+pytest
+python-dotenv
+google-genai             # new SDK, replaces deprecated google-generativeai
+openai                   # used for Groq calls via its OpenAI-compatible endpoint, not for OpenAI itself
+pandas
