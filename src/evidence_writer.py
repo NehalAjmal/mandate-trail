@@ -57,7 +57,7 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
                 model='gemini-3.5-flash-lite',
                 contents=prompt
             )
-            return response.text
+            return "".join([p.text for p in response.candidates[0].content.parts if p.text])
         except APIError as e:
             if e.code == 429:
                 time.sleep(15)  # Wait and retry for quota limits
@@ -107,7 +107,8 @@ def perform_grounding_check(narrative: str, mandate: Mandate, actions: List[Agen
         return False, "Exceeded max retries for grounding check due to API rate limits."
     
     try:
-        result = json.loads(response.text)
+        response_text = "".join([p.text for p in response.candidates[0].content.parts if p.text])
+        result = json.loads(response_text)
         return result.get('passed', False), result.get('reason', 'Failed to parse JSON')
     except Exception as e:
         # If it fails to parse, we default to failing the grounding check to be safe.
