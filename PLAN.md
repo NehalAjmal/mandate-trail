@@ -128,9 +128,9 @@ purpose, don't wait to stumble into it.
 - Run `streamlit run app.py` and click through all 3 screens end to end.
 
 **Exit criteria:**
-- [ ] `pytest tests/test_metrics.py` passes.
-- [ ] Dashboard runs locally with zero errors; all 3 screens load and show real data.
-- [ ] The Metrics screen's numbers match a hand-count you do separately (pick 5 held-out records,
+- [x] `pytest tests/test_metrics.py` passes.
+- [x] Dashboard runs locally with zero errors; all 3 screens load and show real data.
+- [x] The Metrics screen's numbers match a hand-count you do separately (pick 5 held-out records,
       manually check the system's decision against `ground_truth_label`, confirm the dashboard
       agrees).
 
