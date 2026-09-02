@@ -9,3 +9,5 @@ PROMPTS.md
 AI_RULES.md
 run_phase3.py
 hallucination_failure_story.md
+test_llm.py
+test_sqlite.py
