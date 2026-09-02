@@ -33,9 +33,9 @@ isolation, before building anything real on top of it.
 - Write and run a throwaway script that creates a SQLite file, writes one row, reads it back.
 
 **Exit criteria (all must be true before moving on):**
-- [ ] The one-off LLM call script runs and prints a real response, no errors.
-- [ ] The one-off SQLite script successfully writes and reads a row.
-- [ ] `.env` exists, has real keys, and `git status` does NOT show it as staged.
+- [x] The one-off LLM call script runs and prints a real response, no errors.
+- [x] The one-off SQLite script successfully writes and reads a row.
+- [x] `.env` exists, has real keys, and `git status` does NOT show it as staged.
 
 **STOP here. Confirm all three before starting Phase 1.**
 
@@ -52,11 +52,11 @@ isolation, before building anything real on top of it.
 - Run it. Load the resulting `data/mandate_trail.db`.
 
 **Exit criteria:**
-- [ ] Running the seed script twice in a row produces byte-identical row counts and identical
+- [x] Running the seed script twice in a row produces byte-identical row counts and identical
       sampled records (proves the seed is actually fixed).
-- [ ] Querying the DB directly (e.g. via the `sqlite3` CLI) shows the expected ~60 disputes, with
+- [x] Querying the DB directly (e.g. via the `sqlite3` CLI) shows the expected ~60 disputes, with
       roughly even distribution across the 8 archetypes.
-- [ ] Hand-check at least 3 records across different archetypes against `BACKEND_SCHEMA.md` §5's
+- [x] Hand-check at least 3 records across different archetypes against `BACKEND_SCHEMA.md` §5's
       table — do they actually match what that archetype is supposed to look like?
 
 **STOP here. Confirm before starting Phase 2.**

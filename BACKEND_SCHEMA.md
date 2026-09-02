@@ -86,6 +86,7 @@ Shaped directly off Razorpay's real dispute object, as seen in their public webh
 | `respond_by` | INTEGER | **[real field]** unix timestamp |
 | `raised_at` | INTEGER | (`created_at` in Razorpay's real payload — renamed here for clarity against our other `created_at` columns) |
 | `ground_truth_label` | TEXT | **[ours, evaluation-only — see §0]** `contest` \| `escalate` \| `accept`. Set once, at generation time, by the archetype definition in §5. |
+| `is_held_out` | BOOLEAN | **[ours]** 1 if this record is in the 20-record held-out evaluation set, 0 otherwise. Set at generation time. Only `metrics.py` should filter on this. |
 
 ### 1.5 `evidence_packets`
 
