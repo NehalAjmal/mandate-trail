@@ -105,13 +105,13 @@ purpose, don't wait to stumble into it.
 - Run `decision.py` over the full 60-record set end to end.
 
 **Exit criteria:**
-- [ ] `pytest tests/test_evidence_writer.py` passes, including a test that a deliberately-bad
+- [x] `pytest tests/test_evidence_writer.py` passes, including a test that a deliberately-bad
       narrative gets rejected by the grounding check.
-- [ ] For a high-confidence sample: a narrative is generated and passes grounding.
-- [ ] For a low-confidence sample: no narrative is generated at all, correctly escalated.
-- [ ] The deliberate failure case is documented — what broke, what the grounding check did about
+- [x] For a high-confidence sample: a narrative is generated and passes grounding.
+- [x] For a low-confidence sample: no narrative is generated at all, correctly escalated.
+- [x] The deliberate failure case is documented — what broke, what the grounding check did about
       it — in a few sentences, saved somewhere you'll find it again for the pitch video.
-- [ ] Full 60-record run completes with zero crashes.
+- [x] Full 60-record run completes with zero crashes.
 
 **STOP here. Confirm before starting Phase 4.**
 
