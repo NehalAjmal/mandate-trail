@@ -74,10 +74,10 @@ isolation, before building anything real on top of it.
   confidence score and which checks failed.
 
 **Exit criteria:**
-- [ ] `pytest tests/test_rules_engine.py` passes, no skipped tests.
-- [ ] Running the rule engine over the full 60-record set produces a score for every single record
+- [x] `pytest tests/test_rules_engine.py` passes, no skipped tests.
+- [x] Running the rule engine over the full 60-record set produces a score for every single record
       with zero crashes.
-- [ ] Spot-check: archetype 1 (clean legitimate) scores high, archetype 2-4 and 6-7 score lower —
+- [x] Spot-check: archetype 1 (clean legitimate) scores high, archetype 2-4 and 6-7 score lower —
       does the output actually match intuition for each archetype?
 
 **STOP here. Confirm before starting Phase 3.**
