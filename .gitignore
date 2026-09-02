@@ -1,0 +1,9 @@
+.env
+data/mandate_trail.db
+__pycache__/
+*.pyc
+.venv/
+venv/
+.agents/
+PROMPTS.md
+AI_RULES.md
