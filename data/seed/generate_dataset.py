@@ -1,6 +1,6 @@
 """
 Builds the 60-record synthetic dataset from scratch.
-Fixed seed (AI_RULES.md rule 9) -- re-running this produces the identical DB every time.
+Fixed seed -- re-running this produces the identical DB every time.
 """
 import json
 import os
@@ -36,7 +36,7 @@ ITEMS = [
 ]
 
 # Base timestamp: 2026-08-01 00:00:00 UTC
-BASE_TS = 1753920000
+BASE_TS = 1754006400
 DAY = 86400
 
 

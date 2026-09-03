@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from typing import List, Tuple
 from google import genai
@@ -23,12 +24,12 @@ def _build_facts_string(mandate: Mandate, actions: List[AgentAction], order: Ord
     facts += f"Cap: INR {_format_amount(mandate.spending_cap_amount)}\n"
     facts += f"Valid From: {_format_timestamp(mandate.valid_from)}\n"
     facts += f"Valid Until: {_format_timestamp(mandate.valid_until)}\n"
-    
+
     facts += f"\nOrder ID: {order.id}\n"
     facts += f"Order Amount: INR {_format_amount(order.amount)}\n"
     facts += f"Placed At: {_format_timestamp(order.placed_at)}\n"
     facts += f"Fulfilled At: {_format_timestamp(order.fulfilled_at)}\n"
-    
+
     facts += f"\nDispute Reason: {dispute.reason_code}\n"
     facts += "\nAgent Actions (Chronological):\n"
     for a in actions:
@@ -39,18 +40,18 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
     import time
     from google.genai.errors import APIError
     facts = _build_facts_string(mandate, actions, order, dispute)
-    
+
     prompt = f"""
     You are an agent acting on behalf of a merchant defending against a chargeback.
     Write a brief explanation letter (evidence summary) based ONLY on the following facts.
     Do not invent any details, device fingerprints, IP addresses, or customer names.
     This was an agent-initiated transaction, so do not claim a human user clicked or typed anything.
-    
+
     FACTS:
     {facts}
     """
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-    
+
     for attempt in range(5):
         try:
             response = client.models.generate_content(
@@ -65,51 +66,47 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
                 raise
     raise Exception("Exceeded max retries for draft_narrative due to API rate limits.")
 
+
+# Phrases that can never legitimately appear in a narrative about an agent-initiated
+# transaction -- their presence means the narrative invented a human interaction that
+# didn't happen. Deliberately blunt and line-by-line auditable rather than "smart":
+# the whole point of this function is that a person can read it top to bottom and know
+# exactly what it checks, with no judgment delegated to another model.
+FORBIDDEN_PHRASES = [
+    "ip address", "device fingerprint", "clicked", "logged in", "typed",
+    "browser", "safari", "chrome", "firefox", "edge browser",
+    "iphone", "android", "their phone", "her phone", "his phone",
+    "customer's device", "user's device",
+]
+
+_IP_PATTERN = re.compile(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b")
+_AMOUNT_PATTERN = re.compile(r"INR\s*([\d,]+\.\d{2})")
+
+
 def perform_grounding_check(narrative: str, mandate: Mandate, actions: List[AgentAction], order: Order, dispute: Dispute) -> Tuple[bool, str]:
-    import time
-    from google.genai.errors import APIError
-    facts = _build_facts_string(mandate, actions, order, dispute)
-    
-    check_prompt = f"""
-    You are an auditor. Read the following Narrative and the Source Facts.
-    If the Narrative contains ANY specific claim, amount, date, time, or named entity that is NOT explicitly present in the Source Facts, you must reject it.
-    If it mentions device fingerprints, IP addresses, human user actions, or anything implying a human clicked it, reject it (because it was an AI agent).
-    
-    Source Facts:
-    {facts}
-    
-    Narrative:
-    {narrative}
-    
-    Respond in JSON format:
-    {{"passed": true/false, "reason": "short explanation of what failed, or 'clean' if passed"}}
     """
-    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-    
-    response = None
-    for attempt in range(5):
-        try:
-            response = client.models.generate_content(
-                model='gemini-3.5-flash-lite',
-                contents=check_prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                )
-            )
-            break
-        except APIError as e:
-            if e.code == 429:
-                time.sleep(15)
-            else:
-                raise
-    
-    if not response:
-        return False, "Exceeded max retries for grounding check due to API rate limits."
-    
-    try:
-        response_text = "".join([p.text for p in response.candidates[0].content.parts if p.text])
-        result = json.loads(response_text)
-        return result.get('passed', False), result.get('reason', 'Failed to parse JSON')
-    except Exception as e:
-        # If it fails to parse, we default to failing the grounding check to be safe.
-        return False, f"Grounding check failed to parse response: {str(e)}"
+    Deterministic grounding check -- no LLM call, no network call. Every claim in the
+    narrative either matches the structured facts it was given, or the narrative is
+    rejected. The contest/escalate decision in decision.py depends on this function's
+    output, and that decision must never be made by a model.
+    """
+    lower = narrative.lower()
+
+    for phrase in FORBIDDEN_PHRASES:
+        if phrase in lower:
+            return False, f"Narrative references '{phrase}', which cannot be true for an agent-initiated transaction"
+
+    if _IP_PATTERN.search(narrative):
+        return False, "Narrative contains an IP address, which agent-transaction evidence never includes"
+
+    allowed_amounts = {
+        f"{mandate.spending_cap_amount / 100:.2f}",
+        f"{order.amount / 100:.2f}",
+    }
+    for a in actions:
+        allowed_amounts.add(f"{a.amount / 100:.2f}")
+    for amt in _AMOUNT_PATTERN.findall(narrative):
+        if amt.replace(",", "") not in allowed_amounts:
+            return False, f"Narrative cites INR {amt}, which doesn't match any amount in the structured facts"
+
+    return True, "clean"

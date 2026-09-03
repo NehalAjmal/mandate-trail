@@ -5,8 +5,6 @@ built for the case where an AI agent made the purchase, not a human clicking che
 
 Built for the Razorpay AI Buildathon, Track 02 (AI Risk Manager).
 
-> "Mandate Trail" is a working title. Rename it anywhere you want — the docs don't depend on the name.
-
 ## Why this exists
 
 Razorpay's own live pilot lets Claude complete purchases on Zomato, Swiggy, and Zepto through
@@ -21,17 +19,15 @@ Full reasoning, market check, and why this beats the obvious "build a chargeback
 
 ## Read these in order
 
-1. **`PRD.md`** — what this is, and just as important, what it is *not*. Read this first. If
-   the scope here doesn't match what you want to build, stop and fix this file before touching
-   anything else — everything downstream assumes it.
+1. **`PRD.md`** — what this is, and just as important, what it is *not*.
 2. **`TRD.md`** — the exact stack, every account you need to create, and why each choice was made.
 3. **`BACKEND_SCHEMA.md`** — the data layer. Every table, every field, the synthetic dataset design.
 4. **`ARCHITECTURE.md`** — folder structure, module boundaries, where new code is allowed to go.
 5. **`APP_FLOW.md`** — every screen, every state, every button.
-6. **`UI_UX.md`** — how it should look and feel (short, on purpose).
-7. **`PLAN.md`** — the day-by-day, phase-gated build order. Work exactly one phase at a time.
+6. **`UI_UX.md`** — how it should look and feel.
+7. **`PLAN.md`** — the day-by-day, phase-gated build order this was actually built with.
 
-## Quickstart (once Phase 0 of PLAN.md is done)
+## Quickstart
 
 ```bash
 git clone <your-repo-url> mandate-trail
@@ -41,21 +37,24 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env               # then paste your free Gemini or Groq key into .env
 python data/seed/generate_dataset.py   # builds data/mandate_trail.db from scratch
-python run_pipeline.py             # processes the disputes and generates decisions/evidence
+python run_pipeline.py             # runs the full decision pipeline over all 60 records
 pytest                             # all tests should pass before you run the app
 streamlit run app.py               # opens the dashboard at localhost:8501
 ```
 
-## Repo layout (short version — full explanation in ARCHITECTURE.md)
+## Repo layout
 
 ```
 mandate-trail/
 ├── README.md, PRD.md, ARCHITECTURE.md, PLAN.md,
-│   TRD.md, APP_FLOW.md, UI_UX.md, BACKEND_SCHEMA.md   ← you are here
-├── data/               ← schema.sql, the synthetic data generator, the generated .db file
-├── src/                ← rules_engine.py, evidence_writer.py, decision.py, metrics.py, db.py
-├── app.py              ← the Streamlit dashboard, the only UI code in the repo
-├── run_pipeline.py     ← orchestrates the rule engine and evidence generation
+│   TRD.md, APP_FLOW.md, UI_UX.md, BACKEND_SCHEMA.md
+├── .streamlit/
+│   └── config.toml     ← theme only, no custom CSS
+├── data/                schema.sql, the synthetic data generator, the generated .db file
+├── src/                 rules_engine.py, evidence_writer.py, decision.py, metrics.py, db.py, models.py
+├── app.py               the Streamlit dashboard, the only UI code in the repo
+├── run_pipeline.py      runs the full decision pipeline end to end over all 60 records
+├── verify_app.py        automated check of all 3 dashboard screens via Streamlit's AppTest
 ├── tests/
 ├── requirements.txt
 ├── .env.example
@@ -64,4 +63,5 @@ mandate-trail/
 
 ## Current status
 
-Phase 5 complete — App, backend, metrics, and audit logs are verified. Ready for pitch video (Phase 6).
+Phase 5 complete: full pipeline runs end to end on all 60 synthetic records, dashboard's three
+screens verified, audit trail traced. Phase 6 (pitch video + submission) remaining.

@@ -2,7 +2,7 @@
 
 Every choice below optimizes for one thing: lowest chance of something breaking in a 5-day solo
 build, at $0 cost. Not for looking impressive. If you want to swap something, update this file
-first so `ARCHITECTURE.md` and `AI_RULES.md` stay in sync with it.
+first so `ARCHITECTURE.md` stays in sync with it.
 
 ## 1. Stack at a glance
 
@@ -68,8 +68,8 @@ new Copilot Pro sign-ups through the pack were reported paused; don't plan aroun
   report limits several times higher than that floor. You will not hit a paywall building this.
 
 If you do somehow hit a rate limit mid-session: that's what the Groq fallback is for. Don't burn
-time debugging a 429 — swap the provider and keep moving (see `AI_RULES.md` for how the code
-should be structured to make this a one-line change, not a rewrite).
+time debugging a 429 — swap the provider and keep moving (the code is structured to make
+this a one-line change, not a rewrite).
 
 ## 4. Accounts you actually need to create
 
@@ -79,7 +79,7 @@ should be structured to make this a one-line change, not a rewrite).
 
 That's it. No Razorpay account, no AWS/GCP/Azure account, no database provider account.
 
-## 5. `requirements.txt` (starting point — add to this only with a one-line reason, per `AI_RULES.md`)
+## 5. `requirements.txt` (starting point — add to this only with a one-line reason)
 
 ```
 streamlit

@@ -4,7 +4,7 @@
 
 - **Work exactly one phase at a time.** Do not start Phase N+1 until Phase N's exit criteria are
   all checked off and you've explicitly said "proceed to Phase N+1."
-- **Re-read `PRD.md`, `ARCHITECTURE.md`, and `AI_RULES.md` before starting each phase**, not just
+- **Re-read `PRD.md`, `ARCHITECTURE.md`, and `BACKEND_SCHEMA.md` before starting each phase**, not just
   once at the beginning — this is what keeps a multi-day, multi-session AI-assisted build from
   drifting.
 - Dates below assume you're starting **today, Tuesday September 1, 2026**, against the
@@ -91,7 +91,7 @@ purpose, don't wait to stumble into it.
 
 **Tasks:**
 - Write `src/evidence_writer.py`: given a high-confidence record's structured data, call the LLM
-  to draft a narrative. Implement the grounding check (per `AI_RULES.md` §2) — at minimum, verify
+  to draft a narrative. Implement the grounding check — at minimum, verify
   every number, date, and named entity in the generated text also appears in the structured input
   it was given.
 - Write `src/decision.py`: orchestrates `rules_engine` → branch → `evidence_writer` (if

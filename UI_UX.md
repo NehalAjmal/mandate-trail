@@ -13,8 +13,7 @@ No custom CSS injection (`st.markdown(..., unsafe_allow_html=True)` for styling)
 fonts, no custom component libraries. Use `st.dataframe`, `st.metric`, `st.expander`, `st.tabs`,
 `st.selectbox`, `st.columns` for layout — Streamlit's defaults are already clean, and every custom
 CSS injection is one more place an AI coding tool can quietly break the layout without anyone
-noticing until the demo. This isn't a taste preference, it's a risk-reduction rule, same spirit as
-`AI_RULES.md`.
+noticing until the demo. This isn't a taste preference, it's a risk-reduction rule.
 
 ## 3. Status color semantics — consistent everywhere they appear
 
@@ -37,8 +36,7 @@ first, then use it in `app.py`, not the other way around.
 Every confidence score, precision, and recall value is shown as an actual number
 (`0.83`, not just a green bar) next to whatever color or icon represents it. A technical judge
 trusts a number they can double-check against the held-out table more than a color they have to
-take on faith. This is the same instinct as `AI_RULES.md` §10 — legibility of evidence beats
-polish, everywhere in this project.
+take on faith. Legibility of evidence beats polish, everywhere in this project.
 
 ## 5. Layout
 

@@ -95,9 +95,9 @@ honest failure account, not because a dashboard "should" have a metrics page.
 
 **Elements:**
 1. Three `st.metric` cards: **Precision**, **Recall**, **False-positive count** — each computed
-   live by `src/metrics.py` against the 20 held-out records, never hardcoded (see `AI_RULES.md`
-   §10 — this screen is the one place that rule matters most, since it's the one judges will
-   screenshot).
+   live by `src/metrics.py` against the 20 held-out records, never hardcoded (every metric shown
+   anywhere must be computed live, not written as a literal number — this screen is the one place
+   that rule matters most, since it's the one judges will screenshot).
 2. A table of all 20 held-out records: `id`, `recommended_action`, `ground_truth_label`, whether
    they matched — so a judge can verify the top-line numbers by eye, not just trust them.
 3. A short, fixed markdown block: **"What broke"** — the Phase 3 documented failure (the LLM
@@ -106,6 +106,6 @@ honest failure account, not because a dashboard "should" have a metrics page.
 
 **States:** effectively one state — this screen has no interactivity beyond what's already loaded.
 Keep it that way; a metrics screen with knobs and toggles invites fiddling with the numbers until
-they look better, which is exactly what `AI_RULES.md` §10 exists to prevent.
+they look better, which is exactly what the no-hardcoded-metrics rule exists to prevent.
 
 **Buttons / actions:** none. This is a read-only report.

@@ -19,8 +19,6 @@
 mandate-trail/
 ├── README.md
 ├── PRD.md
-├── ARCHITECTURE.md          ← this file
-├── AI_RULES.md
 ├── PLAN.md
 ├── TRD.md
 ├── APP_FLOW.md
@@ -29,7 +27,11 @@ mandate-trail/
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
+├── .streamlit/
+│   └── config.toml            # Streamlit theme — no custom CSS
 ├── app.py                    # Streamlit entrypoint — the ONLY UI code in the repo
+├── run_pipeline.py           # runs the full decision pipeline end to end over all 60 records
+├── verify_app.py             # automated check of all 3 dashboard screens via Streamlit's AppTest
 ├── data/
 │   ├── schema.sql             # CREATE TABLE statements, matches BACKEND_SCHEMA.md exactly
 │   ├── seed/
@@ -40,7 +42,7 @@ mandate-trail/
 │   ├── models.py               # typed dataclasses: Mandate, AgentAction, Order, Dispute, etc.
 │   ├── db.py                   # all SQLite reads/writes go through here, nowhere else
 │   ├── rules_engine.py         # deterministic checks + confidence score. NO LLM. NO network calls.
-│   ├── evidence_writer.py      # LLM narrative generation + the grounding check
+│   ├── evidence_writer.py      # LLM narrative generation + deterministic grounding check
 │   ├── decision.py             # orchestrates rules_engine + evidence_writer into a final decision
 │   └── metrics.py              # precision/recall/false-positive cost — the ONLY module allowed
 │                                # to read disputes.ground_truth_label

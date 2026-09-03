@@ -97,7 +97,7 @@ Only created for disputes the rule engine marked high-confidence.
 | `id` | TEXT PK | |
 | `dispute_id` | TEXT FK → disputes.id | |
 | `narrative_text` | TEXT | the LLM-drafted explanation — maps to Razorpay's real `evidence.explanation_letter` / `evidence.summary` fields **[real field mapping]** |
-| `grounding_check_passed` | BOOLEAN | see `AI_RULES.md` §1-2 for what this checks |
+| `grounding_check_passed` | BOOLEAN | deterministic check: every claim in the narrative must trace to a structured fact, or the case is forced to escalation |
 | `mapped_evidence_fields` | TEXT (JSON) | which of Razorpay's real evidence sub-fields this maps to — see §2 below |
 | `generated_at` | INTEGER | unix timestamp |
 

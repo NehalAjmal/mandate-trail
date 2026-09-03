@@ -92,19 +92,19 @@ def render_detail(dispute_id):
     mandate = db.get_mandate_by_id(conn, order.mandate_id)
     actions = db.get_actions_for_mandate(conn, mandate.id)
     
-    decision_row = conn.execute("SELECT * FROM decisions WHERE dispute_id=?", (dispute_id,)).fetchone()
+    decision = db.get_decision_for_dispute(conn, dispute_id)
     evidence_row = conn.execute("SELECT * FROM evidence_packets WHERE dispute_id=?", (dispute_id,)).fetchone()
     audits = conn.execute("SELECT * FROM audit_log WHERE dispute_id=? ORDER BY created_at ASC", (dispute_id,)).fetchall()
     
-    if not decision_row:
+    if not decision:
         st.warning("No decision found.")
         conn.close()
         return
         
-    recommended_action = decision_row[4]
-    confidence_score = decision_row[2]
-    checks_passed = json.loads(decision_row[3])
-    decided_by = decision_row[6]
+    recommended_action = decision.recommended_action
+    confidence_score = decision.confidence_score
+    checks_passed = json.loads(decision.checks_passed)
+    decided_by = decision.decided_by
     
     st.header(f"{dispute.id} - {dispute.reason_code}")
     st.subheader(f"Amount: {format_inr(dispute.amount)} | Razorpay: {dispute.status} | Recommendation: {get_action_prefix(recommended_action)}")
