@@ -61,6 +61,3 @@ mandate-trail/
 └── .gitignore
 ```
 
-## Current status
-
-Completed. Submitted for the Razorpay AI Buildathon 2026 (Track 02: AI Risk Manager).
