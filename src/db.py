@@ -20,6 +20,19 @@ def init_db(db_path=None):
     return conn
 
 
+# --- Deletes ---
+
+def clear_decision_state(conn, dispute_id: str):
+    """
+    Removes any existing decision and evidence packet for this dispute before a fresh
+    process_dispute() run writes new ones. decisions.id and evidence_packets.id are
+    random UUIDs, not keyed on dispute_id, so nothing else stops re-runs from
+    accumulating duplicate rows per dispute instead of replacing them.
+    """
+    conn.execute("DELETE FROM decisions WHERE dispute_id = ?", (dispute_id,))
+    conn.execute("DELETE FROM evidence_packets WHERE dispute_id = ?", (dispute_id,))
+
+
 # --- Inserts ---
 
 def insert_mandate(conn, m: Mandate):

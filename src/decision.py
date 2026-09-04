@@ -11,6 +11,8 @@ def process_dispute(conn, dispute_id: str):
     if not dispute:
         raise ValueError(f"Dispute {dispute_id} not found")
         
+    db.clear_decision_state(conn, dispute.id)
+        
     order = db.get_order_by_id(conn, dispute.order_id)
     mandate = db.get_mandate_by_id(conn, order.mandate_id)
     actions = db.get_actions_for_mandate(conn, mandate.id)
@@ -27,8 +29,15 @@ def process_dispute(conn, dispute_id: str):
     # 2. Branch
     if score == 1.0:
         # High confidence -> try to contest
-        narrative = draft_narrative(mandate, actions, order, dispute)
-        passed, reason = perform_grounding_check(narrative, mandate, actions, order, dispute)
+        narrative = ""
+        passed = False
+        reason = ""
+        
+        for _ in range(3):
+            narrative = draft_narrative(mandate, actions, order, dispute)
+            passed, reason = perform_grounding_check(narrative, mandate, actions, order, dispute)
+            if passed:
+                break
         
         if passed:
             evidence_id = f"ev_{uuid.uuid4().hex[:8]}"

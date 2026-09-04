@@ -50,21 +50,42 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
     FACTS:
     {facts}
     """
-    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    provider = os.environ.get("LLM_PROVIDER", "gemini").strip()
 
-    for attempt in range(5):
-        try:
-            response = client.models.generate_content(
-                model='gemini-3.5-flash-lite',
-                contents=prompt
-            )
-            return "".join([p.text for p in response.candidates[0].content.parts if p.text])
-        except APIError as e:
-            if e.code == 429:
-                time.sleep(15)  # Wait and retry for quota limits
-            else:
-                raise
-    raise Exception("Exceeded max retries for draft_narrative due to API rate limits.")
+    if provider == "groq":
+        import openai
+        client = openai.OpenAI(
+            base_url="https://api.groq.com/openai/v1",
+            api_key=os.environ.get("GROQ_API_KEY")
+        )
+        for attempt in range(50):
+            try:
+                response = client.chat.completions.create(
+                    model="openai/gpt-oss-120b",
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                print(f"Groq API returned {e}, retrying after 15s... (Attempt {attempt+1}/50)")
+                time.sleep(15)
+        raise Exception("Exceeded max retries for draft_narrative via Groq.")
+    else:
+        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    
+        for attempt in range(50):
+            try:
+                response = client.models.generate_content(
+                    model='gemini-3.5-flash-lite',
+                    contents=prompt
+                )
+                return "".join([p.text for p in response.candidates[0].content.parts if p.text])
+            except APIError as e:
+                if e.code in (429, 503):
+                    print(f"Gemini API returned {e.code}, retrying after 15s... (Attempt {attempt+1}/50)")
+                    time.sleep(15)  # Wait and retry for quota or capacity limits
+                else:
+                    raise
+        raise Exception("Exceeded max retries for draft_narrative due to API rate limits.")
 
 
 # Phrases that can never legitimately appear in a narrative about an agent-initiated

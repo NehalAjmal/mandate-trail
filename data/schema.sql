@@ -56,7 +56,7 @@ CREATE TABLE disputes (
 
 CREATE TABLE evidence_packets (
     id TEXT PRIMARY KEY,
-    dispute_id TEXT NOT NULL REFERENCES disputes(id),
+    dispute_id TEXT NOT NULL UNIQUE REFERENCES disputes(id),
     narrative_text TEXT NOT NULL,
     grounding_check_passed BOOLEAN NOT NULL,
     mapped_evidence_fields TEXT NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE evidence_packets (
 
 CREATE TABLE decisions (
     id TEXT PRIMARY KEY,
-    dispute_id TEXT NOT NULL REFERENCES disputes(id),
+    dispute_id TEXT NOT NULL UNIQUE REFERENCES disputes(id),
     confidence_score REAL NOT NULL,
     checks_passed TEXT NOT NULL,
     recommended_action TEXT NOT NULL CHECK (recommended_action IN ('contest', 'escalate', 'accept')),
