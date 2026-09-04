@@ -206,7 +206,7 @@ def render_metrics():
     
     st.markdown("### What broke")
     try:
-        with open("hallucination_failure_story.md", "r") as f:
+        with open("failure_recovery_story.md", "r") as f:
             st.markdown(f.read())
     except FileNotFoundError:
         st.write("Failure story not found.")
