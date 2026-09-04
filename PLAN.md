@@ -5,7 +5,7 @@
 - **Work exactly one phase at a time.** Do not start Phase N+1 until Phase N's exit criteria are
   all checked off and you've explicitly said "proceed to Phase N+1."
 - **Re-read `PRD.md`, `ARCHITECTURE.md`, and `BACKEND_SCHEMA.md` before starting each phase**, not just
-  once at the beginning — this is what keeps a multi-day, multi-session AI-assisted build from
+  once at the beginning — this is what keeps a multi-day, multi-session build from
   drifting.
 - Dates below assume you're starting **today, Tuesday September 1, 2026**, against the
   **September 5 close**. If you're reading this later than Sep 1, shift every date forward by the
@@ -20,7 +20,7 @@
 
 ### Phase 0 — Prove the plumbing works (Tue Sep 1, morning)
 
-The single most common way solo AI-assisted builds lose a day: discovering on Day 3 that the LLM
+The single most common way solo builds lose a day: discovering on Day 3 that the architecture
 API key, SDK version, or SQLite setup was broken from the start. Prove all of it works, in
 isolation, before building anything real on top of it.
 
@@ -144,7 +144,7 @@ purpose, don't wait to stumble into it.
 - Pick 2-3 disputes at random in the dashboard and manually trace every field shown back to
   `audit_log` — is the trail actually complete, or are there gaps?
 - Re-read `README.md`'s quickstart from a clean perspective (or better: have someone else, or a
-  fresh AI session with no prior context, try to follow it) — does it actually work end to end?
+  fresh reviewer with no prior context, try to follow it) — does it actually work end to end?
 - Clean up any dead code, unused imports, leftover print-debugging.
 - Fix `README.md`'s "Current status" line to reflect reality.
 
