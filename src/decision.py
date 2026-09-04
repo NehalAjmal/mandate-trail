@@ -15,12 +15,13 @@ def process_dispute(conn, dispute_id: str):
     mandate = db.get_mandate_by_id(conn, order.mandate_id)
     actions = db.get_actions_for_mandate(conn, mandate.id)
     confirming_action = next(a for a in actions if a.id == order.confirming_action_id)
+    sibling_orders = db.get_orders_for_mandate(conn, mandate.id)
     
     now = int(time.time())
     db.insert_audit_log(conn, dispute.id, "dispute_ingested", json.dumps({"dispute_id": dispute.id}), now)
     
     # 1. Rule Engine
-    score, checks = evaluate_confidence(order, mandate, confirming_action)
+    score, checks = evaluate_confidence(order, mandate, confirming_action, sibling_orders)
     db.insert_audit_log(conn, dispute.id, "rule_check_run", json.dumps({"score": score, "checks": checks}), now)
     
     # 2. Branch

@@ -123,6 +123,13 @@ def get_actions_for_mandate(conn, mandate_id: str):
     return [_row_to_action(r) for r in rows]
 
 
+def get_orders_for_mandate(conn, mandate_id: str):
+    rows = conn.execute(
+        "SELECT * FROM orders WHERE mandate_id = ? ORDER BY placed_at", (mandate_id,)
+    ).fetchall()
+    return [_row_to_order(r) for r in rows]
+
+
 def get_decision_for_dispute(conn, dispute_id: str):
     row = conn.execute(
         "SELECT * FROM decisions WHERE dispute_id = ?", (dispute_id,)

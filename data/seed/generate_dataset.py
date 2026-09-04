@@ -193,7 +193,7 @@ def _build_archetype(arch_num, count, held_out_count):
 
         is_held_out = i in held_out_indices
 
-        records.append((mandate, actions, order, dispute, is_held_out))
+        records.append((mandate, actions, [order], dispute, is_held_out))
 
         # Archetype 7: add a near-duplicate action chain to simulate the duplicate transaction
         if arch_num == 7:
@@ -203,7 +203,19 @@ def _build_archetype(arch_num, count, held_out_count):
             # Shift timestamps slightly to make them "near-identical but not exact"
             for da in dup_actions:
                 da.timestamp += random.randint(60, 300)
-            records[-1] = (mandate, actions + dup_actions, order, dispute, is_held_out)
+            
+            dup_order = Order(
+                id=_next_id('order'),
+                mandate_id=mandate_id,
+                confirming_action_id=dup_actions[-1].id,
+                merchant_id=order_merchant,
+                amount=order_amount,
+                currency='INR',
+                status=order_status,
+                placed_at=placed_at + random.randint(60, 300),
+                fulfilled_at=fulfilled_at + random.randint(60, 300) if fulfilled_at else None,
+            )
+            records[-1] = (mandate, actions + dup_actions, [order, dup_order], dispute, is_held_out)
 
     return records
 
@@ -235,11 +247,12 @@ def main():
 
     for arch_num, count, ho_count in archetype_configs:
         records = _build_archetype(arch_num, count, ho_count)
-        for mandate, actions, order, dispute, is_held_out in records:
+        for mandate, actions, orders, dispute, is_held_out in records:
             db.insert_mandate(conn, mandate)
             for action in actions:
                 db.insert_agent_action(conn, action)
-            db.insert_order(conn, order)
+            for order in orders:
+                db.insert_order(conn, order)
             db.insert_dispute(conn, dispute)
             total += 1
             if is_held_out:
