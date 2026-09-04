@@ -63,5 +63,4 @@ mandate-trail/
 
 ## Current status
 
-Phase 5 complete: full pipeline runs end to end on all 60 synthetic records, dashboard's three
-screens verified, audit trail traced. Phase 6 (pitch video + submission) remaining.
+Completed. Submitted for the Razorpay AI Buildathon 2026 (Track 02: AI Risk Manager).
