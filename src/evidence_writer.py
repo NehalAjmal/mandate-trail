@@ -44,8 +44,12 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
     prompt = f"""
     You are an agent acting on behalf of a merchant defending against a chargeback.
     Write a brief explanation letter (evidence summary) based ONLY on the following facts.
-    Do not invent any details, device fingerprints, IP addresses, or customer names.
-    This was an agent-initiated transaction, so do not claim a human user clicked or typed anything.
+
+    CRITICAL INSTRUCTIONS:
+    1. Do not invent any details, device fingerprints, IP addresses, or customer names.
+    2. This was an agent-initiated transaction, so do not claim a human user clicked, logged in, or typed anything.
+    3. Do not mention any browsers (safari, chrome, firefox, edge) or devices (iphone, android, phone).
+    4. Do not include any numbers, amounts, or prices that are not explicitly listed in the FACTS below.
 
     FACTS:
     {facts}
@@ -62,7 +66,8 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
             try:
                 response = client.chat.completions.create(
                     model="openai/gpt-oss-120b",
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.0
                 )
                 return response.choices[0].message.content
             except Exception as e:
@@ -76,7 +81,8 @@ def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, 
             try:
                 response = client.models.generate_content(
                     model='gemini-3.5-flash-lite',
-                    contents=prompt
+                    contents=prompt,
+                    config=types.GenerateContentConfig(temperature=0.0)
                 )
                 return "".join([p.text for p in response.candidates[0].content.parts if p.text])
             except APIError as e:

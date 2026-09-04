@@ -29,15 +29,8 @@ def process_dispute(conn, dispute_id: str):
     # 2. Branch
     if score == 1.0:
         # High confidence -> try to contest
-        narrative = ""
-        passed = False
-        reason = ""
-        
-        for _ in range(3):
-            narrative = draft_narrative(mandate, actions, order, dispute)
-            passed, reason = perform_grounding_check(narrative, mandate, actions, order, dispute)
-            if passed:
-                break
+        narrative = draft_narrative(mandate, actions, order, dispute)
+        passed, reason = perform_grounding_check(narrative, mandate, actions, order, dispute)
         
         if passed:
             evidence_id = f"ev_{uuid.uuid4().hex[:8]}"
