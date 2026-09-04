@@ -93,7 +93,7 @@ def render_detail(dispute_id):
     actions = db.get_actions_for_mandate(conn, mandate.id)
     
     decision = db.get_decision_for_dispute(conn, dispute_id)
-    evidence_row = conn.execute("SELECT * FROM evidence_packets WHERE dispute_id=?", (dispute_id,)).fetchone()
+    evidence_packet = db.get_evidence_packet_for_dispute(conn, dispute_id)
     audits = conn.execute("SELECT * FROM audit_log WHERE dispute_id=? ORDER BY created_at ASC", (dispute_id,)).fetchall()
     
     if not decision:
@@ -138,10 +138,10 @@ def render_detail(dispute_id):
     st.divider()
     
     st.markdown("**Evidence Narrative**")
-    if evidence_row:
-        grounding_passed = evidence_row[3]
+    if evidence_packet:
+        grounding_passed = evidence_packet.grounding_check_passed
         st.markdown(f"**{get_grounding_prefix(grounding_passed)}**")
-        st.write(evidence_row[2])
+        st.write(evidence_packet.narrative_text)
     else:
         st.info("No evidence narrative generated for this dispute (escalated case).")
         

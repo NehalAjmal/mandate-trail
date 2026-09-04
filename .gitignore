@@ -7,6 +7,5 @@ venv/
 .agents/
 PROMPTS.md
 AI_RULES.md
-hallucination_failure_story.md
 test_llm.py
 test_sqlite.py

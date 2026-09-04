@@ -130,6 +130,13 @@ def get_decision_for_dispute(conn, dispute_id: str):
     return _row_to_decision(row) if row else None
 
 
+def get_evidence_packet_for_dispute(conn, dispute_id: str):
+    row = conn.execute(
+        "SELECT * FROM evidence_packets WHERE dispute_id = ?", (dispute_id,)
+    ).fetchone()
+    return EvidencePacket(*row) if row else None
+
+
 def get_audit_log_for_dispute(conn, dispute_id: str):
     rows = conn.execute(
         "SELECT * FROM audit_log WHERE dispute_id = ? ORDER BY created_at", (dispute_id,)
