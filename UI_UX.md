@@ -12,7 +12,7 @@ marketing-style UI on a risk tool reads as compensating for something. Resist th
 No custom CSS injection (`st.markdown(..., unsafe_allow_html=True)` for styling), no custom
 fonts, no custom component libraries. Use `st.dataframe`, `st.metric`, `st.expander`, `st.tabs`,
 `st.selectbox`, `st.columns` for layout — Streamlit's defaults are already clean, and every custom
-CSS injection is one more place an AI coding tool can quietly break the layout without anyone
+CSS injection is one more place the layout can quietly break without anyone
 noticing until the demo. This isn't a taste preference, it's a risk-reduction rule.
 
 ## 3. Status color semantics — consistent everywhere they appear
