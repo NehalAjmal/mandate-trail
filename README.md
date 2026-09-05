@@ -1,7 +1,7 @@
 <h1 align="center">Mandate Trail</h1>
 
 <p align="center">
-  <strong>Evidence and dispute-response engine for agent-initiated transactions</strong><br>
+  <strong>Evidence and dispute-response engine for agent-initiated transactions.</strong><br>
   Chargeback defense built for the case where an AI agent made the purchase, not a human.
 </p>
 
