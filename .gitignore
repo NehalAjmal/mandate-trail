@@ -5,7 +5,5 @@ __pycache__/
 .venv/
 venv/
 .agents/
-PROMPTS.md
-AI_RULES.md
 test_llm.py
 test_sqlite.py
