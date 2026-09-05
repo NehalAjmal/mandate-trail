@@ -40,7 +40,7 @@ of — not reproduced here to keep this file focused on scope, not justification
   log**, and the **fulfillment record**.
 - A deterministic rule engine that checks: spending cap respected, mandate active at time of
   purchase, merchant matches what was authorized, fulfillment confirmed, timestamps internally
-  consistent. Output: a confidence score plus the individual pass/fail per check.
+  consistent, no near-duplicate order under the same mandate within a tight time/amount window. Output: a confidence score plus the individual pass/fail per check.
 - A branch: high confidence + all checks clean → LLM drafts a grounded evidence narrative,
   system recommends "contest." Anything else → escalate to human, no narrative generated, no
   auto-anything.

@@ -174,3 +174,15 @@ After fixing the grounding check, we deliberately fed the evidence writer sparse
 **Summary:** Tested 4 sparse/conflicting records. 4 passed the grounding check, 0 failed.
 
 The LLM did not hallucinate on these specific records — it stayed within the facts provided. The deterministic grounding check (forbidden-phrase matching, IP detection, amount verification) remains explicitly designed to catch the failure modes that agent-transaction narratives are vulnerable to: fabricated device fingerprints, invented IP addresses, and claims of human interaction that never happened. The unit test in `run_pipeline.py` demonstrates the check catching exactly these patterns.
+
+---
+
+### 3. The Danger of "Self-Correcting" Safety Checks
+
+During pipeline stabilization, we observed occasional hallucinations (e.g., the LLM inventing an IP address for an agent-initiated transaction). To "fix" this, an experimental retry loop was added to `decision.py`: if the grounding check failed, it would re-prompt the LLM up to 3 times to generate a clean narrative.
+
+**Why this was a failure:**
+The whole point of the deterministic grounding check is to act as an un-gamable safety mechanism. If the LLM hallucinates, the case *should* fail safely and escalate to a human. By wrapping that in a `for _ in range(3):` loop, the system was essentially told: "Keep re-rolling the dice until the safety check passes." This completely undermines the architecture. A safety check should never be bypassed by brute force; if a model fails a strict constraint, it masks unreliability to silently re-roll it.
+
+**How we fixed it:**
+We completely removed the retry loop. To achieve compliance without brute-forcing the safety net, we solved the root cause: we hardened the prompt with explicit negative constraints and set `temperature=0.0` on the LLM API call to make generation deterministic. This reduced hallucinations to near-zero, and on the rare occasion one still occurs, the safety net correctly catches it and escalates the dispute on the first try.

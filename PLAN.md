@@ -152,6 +152,8 @@ purpose, don't wait to stumble into it.
 - [x] Every value shown in the Detail screen can be traced to a specific `audit_log` row.
 - [x] A completely clean clone + the README's quickstart commands work with no undocumented steps.
 
+*Post-Phase-5 hardening: added a 6th duplicate-detection check, fixed a decision-accumulation bug, reverted an unsafe LLM self-correction loop in favor of deterministic temperature=0 — see `failure_recovery_story.md`*
+
 **STOP here. Confirm before starting Phase 6.**
 
 ---

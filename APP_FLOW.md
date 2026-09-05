@@ -57,7 +57,7 @@ that has to make a skeptical judge trust the system, so nothing here is summariz
    the "no click trail, but here's what we have instead" section, worth making legible, not an
    afterthought.
 4. **Fulfillment** section: order status, `fulfilled_at` if present.
-5. **Rule Engine Result** section: all 5 checks from `BACKEND_SCHEMA.md` §3, each shown pass/fail,
+5. **Rule Engine Result** section: the rule-engine checks from `BACKEND_SCHEMA.md` §3, each shown pass/fail,
    plus the resulting `confidence_score` as a literal number (not just a color — see `UI_UX.md`).
 6. **Evidence Narrative** section — only rendered if `evidence_packets` has a row for this dispute:
    the `narrative_text`, plus a visible `grounding_check_passed` badge. If no evidence packet

@@ -95,7 +95,7 @@ Only created for disputes the rule engine marked high-confidence.
 | Column | Type | Notes |
 |---|---|---|
 | `id` | TEXT PK | |
-| `dispute_id` | TEXT FK → disputes.id | |
+| `dispute_id` | TEXT FK → disputes.id | `dispute_id` is `UNIQUE` — enforced after a same-day bug where re-running the pipeline accumulated duplicate rows per dispute. |
 | `narrative_text` | TEXT | the LLM-drafted explanation — maps to Razorpay's real `evidence.explanation_letter` / `evidence.summary` fields **[real field mapping]** |
 | `grounding_check_passed` | BOOLEAN | deterministic check: every claim in the narrative must trace to a structured fact, or the case is forced to escalation |
 | `mapped_evidence_fields` | TEXT (JSON) | which of Razorpay's real evidence sub-fields this maps to — see §2 below |
@@ -109,7 +109,7 @@ The system's actual output. This is the ONLY table `metrics.py` compares against
 | Column | Type | Notes |
 |---|---|---|
 | `id` | TEXT PK | |
-| `dispute_id` | TEXT FK → disputes.id | |
+| `dispute_id` | TEXT FK → disputes.id | `dispute_id` is `UNIQUE` — enforced after a same-day bug where re-running the pipeline accumulated duplicate rows per dispute. |
 | `confidence_score` | REAL | 0.0-1.0, from `rules_engine.py` |
 | `checks_passed` | TEXT (JSON) | e.g. `{"within_cap": true, "mandate_active": true, "merchant_matches": true, "fulfilled": true, "timestamps_consistent": true}` |
 | `recommended_action` | TEXT | `contest` \| `escalate` \| `accept` — our system's output |
@@ -155,8 +155,9 @@ you land on:
 4. `fulfilled` — order `status = 'fulfilled'` and `fulfilled_at` is not null
 5. `timestamps_consistent` — no impossible ordering (e.g. `fulfilled_at` before `placed_at`;
    confirming action's timestamp after the order's `placed_at`)
+6. `check_no_duplicate_nearby` — no near-duplicate order under the same mandate within a tight time/amount window
 
-`confidence_score` = fraction of checks passed (0.0-1.0). Suggested threshold: **all 5 checks
+`confidence_score` = fraction of checks passed (0.0-1.0). Suggested threshold: **all 6 checks
 pass → high confidence → contest path. Any single check fails → escalate, no narrative
 generated.** This is intentionally strict — a system that "mostly" trusts a shaky case is worse
 than one that escalates too often. Tune with real numbers from the held-out set in Phase 4, not
@@ -193,7 +194,7 @@ development/tuning and must never be reported as "the" evaluation numbers.
 | 4 | Wrong merchant | `escalate` | Order merchant doesn't match what the mandate authorized |
 | 5 | Not fulfilled | `accept` | No fulfillment confirmation — `goods_or_services_not_received` is often a legitimate dispute |
 | 6 | Timestamp inconsistency | `escalate` | e.g. fulfillment logged before the order was even placed — a data-integrity red flag, needs a human |
-| 7 | Duplicate transaction | `escalate` | Two near-identical agent actions close in time — ambiguous, could be a legitimate re-order or a glitch |
+| 7 | Duplicate transaction | `escalate` | Two near-identical agent actions close in time. Detected by `check_no_duplicate_nearby`, added during final review after the confusion matrix showed these records incorrectly scoring 6/6 confidence. |
 | 8 | Clean legitimate, mislabeled reason code | `contest` | All checks pass, but the customer's claimed reason code doesn't match the records — tests that the system isn't fooled by the claimed reason alone |
 
 This taxonomy is the actual failure-recovery test bed too: archetype 6 or 7 (sparse/conflicting

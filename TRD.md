@@ -8,10 +8,10 @@ first so `ARCHITECTURE.md` stays in sync with it.
 
 | Layer | Choice | Why |
 |---|---|---|
-| Language | Python 3.11+ | One language, no build step, huge ecosystem for data + rules + LLM calls. Removes an entire class of "frontend can't talk to backend" bugs by not having a separate frontend. |
+| Language | Python 3.9+ (built and tested on 3.9.6 — note this is past end-of-life; 3.11+ recommended for a fresh start) | One language, no build step, huge ecosystem for data + rules + LLM calls. Removes an entire class of "frontend can't talk to backend" bugs by not having a separate frontend. |
 | App / UI | Streamlit | The dashboard *is* the app — no separate API layer, no CORS, no JS build tooling. Renders tables/metrics cleanly with zero custom CSS. |
 | Database | SQLite (Python's built-in `sqlite3`) | Zero setup, zero external account, zero cost, trivially portable. Entirely appropriate at ~60-row scale — a hosted DB here would be pure risk for no benefit. |
-| LLM | Google Gemini API (Flash / Flash-Lite tier) — primary. Groq (Llama/GPT-OSS class models) — fallback. | Both have genuine no-credit-card free tiers today. Claude API does **not** have a free tier (see §2) — a small unpublished signup credit only, then paid per token, so it's excluded by the "totally free" requirement. |
+| LLM | Google Gemini API (Flash / Flash-Lite tier) — primary. Groq (Llama/GPT-OSS class models) — fallback. | Both have genuine no-credit-card free tiers today. Narrative generation runs at temperature=0.0 for reproducibility and to minimize hallucination variance. Claude API does **not** have a free tier (see §2) — a small unpublished signup credit only, then paid per token, so it's excluded by the "totally free" requirement. |
 | Testing | `pytest` | Standard, free, no config needed to get started. |
 | Dependency mgmt | `venv` + `requirements.txt` | Simplest, most universal option — skip Poetry/Pipenv, they add friction for no benefit at this scale. |
 | Version control | Git + GitHub | Free, and required anyway — the buildathon asks for a public repo. |
