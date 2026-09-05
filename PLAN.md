@@ -171,8 +171,9 @@ purpose, don't wait to stumble into it.
 - Submit — aim for Friday night or early Saturday, not the last hour of Sep 5.
 
 **Exit criteria:**
-- [ ] Video recorded, uploaded (unlisted is fine), under or around 5 minutes.
-- [ ] Repo is public, `.env` was never committed, README quickstart verified one more time.
-- [ ] Form submitted.
+- [x] Video recorded, uploaded (unlisted is fine), under or around 5 minutes.
+- [x] Repo is public, `.env` was never committed, README quickstart verified one more time.
+- [x] Form submitted.
 
 **Done.**
+
