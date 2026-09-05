@@ -74,11 +74,11 @@ cd mandate-trail
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env               # then paste your free Gemini or Groq key into .env
+cp .env.example .env               # then paste your free Gemini (recommended) or Groq key into .env
 python data/seed/generate_dataset.py   # builds data/mandate_trail.db from scratch
 python run_pipeline.py             # runs the full decision pipeline over all 60 records
 pytest                             # all tests should pass before you run the app
-streamlit run app.py               # opens the dashboard at localhost:8501
+streamlit run app.py               # opens the dashboard at localhost:8502
 ```
 
 ## Repo layout
