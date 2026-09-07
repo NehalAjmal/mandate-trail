@@ -1,4 +1,3 @@
-import sys
 # pyrefly: ignore [missing-import,wildcard-import]
 from streamlit.testing.v1 import AppTest
 

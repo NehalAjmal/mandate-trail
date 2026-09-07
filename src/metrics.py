@@ -6,6 +6,7 @@ def compute_metrics(conn: sqlite3.Connection) -> Dict[str, Any]:
     # ONLY against the 20 held-out records.
     query = """
     SELECT 
+        d.id as dispute_id,
         d.ground_truth_label,
         dec.recommended_action
     FROM disputes d
@@ -20,7 +21,17 @@ def compute_metrics(conn: sqlite3.Connection) -> Dict[str, Any]:
     false_negatives = 0
     true_negatives = 0
     
-    for ground_truth, recommended in rows:
+    raw_data = []
+    
+    for dispute_id, ground_truth, recommended in rows:
+        matched = 'Yes' if recommended == ground_truth else 'No'
+        raw_data.append({
+            "dispute_id": dispute_id,
+            "recommended_action": recommended,
+            "ground_truth_label": ground_truth,
+            "matched": matched
+        })
+        
         if recommended == 'contest' and ground_truth == 'contest':
             true_positives += 1
         elif recommended == 'contest' and ground_truth != 'contest':
@@ -43,5 +54,6 @@ def compute_metrics(conn: sqlite3.Connection) -> Dict[str, Any]:
         "total_held_out": len(rows),
         "true_positives": true_positives,
         "false_negatives": false_negatives,
-        "true_negatives": true_negatives
+        "true_negatives": true_negatives,
+        "raw_data": raw_data
     }

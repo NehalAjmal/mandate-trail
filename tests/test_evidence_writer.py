@@ -1,7 +1,7 @@
 # pyrefly: ignore [missing-import]
 import pytest
 from src.models import Mandate, AgentAction, Order, Dispute
-from src.evidence_writer import perform_grounding_check, draft_narrative
+from src.evidence_writer import perform_grounding_check
 
 @pytest.fixture
 def mock_data():

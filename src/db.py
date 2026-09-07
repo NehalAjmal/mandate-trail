@@ -162,3 +162,18 @@ def get_audit_log_for_dispute(conn, dispute_id: str):
         "SELECT * FROM audit_log WHERE dispute_id = ? ORDER BY created_at", (dispute_id,)
     ).fetchall()
     return [AuditLogEntry(*r) for r in rows]
+
+def get_queue_view(conn):
+    query = """
+    SELECT 
+        d.id as dispute_id,
+        d.reason_code,
+        d.amount,
+        dec.confidence_score,
+        dec.recommended_action,
+        d.status as razorpay_status
+    FROM disputes d
+    LEFT JOIN decisions dec ON d.id = dec.dispute_id
+    """
+    rows = conn.execute(query).fetchall()
+    return rows

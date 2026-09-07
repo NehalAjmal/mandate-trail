@@ -9,31 +9,24 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from src.models import Mandate, AgentAction, Order, Dispute
-
-def _format_timestamp(ts: int) -> str:
-    from datetime import datetime, timezone
-    if ts is None: return "None"
-    return datetime.fromtimestamp(ts, timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
-
-def _format_amount(paise: int) -> str:
-    return f"{paise / 100:.2f}"
+from src.utils import format_ts, format_inr
 
 def _build_facts_string(mandate: Mandate, actions: List[AgentAction], order: Order, dispute: Dispute) -> str:
     facts = f"Mandate ID: {mandate.id}\n"
     facts += f"Merchant: {mandate.merchant_id}\n"
-    facts += f"Cap: INR {_format_amount(mandate.spending_cap_amount)}\n"
-    facts += f"Valid From: {_format_timestamp(mandate.valid_from)}\n"
-    facts += f"Valid Until: {_format_timestamp(mandate.valid_until)}\n"
+    facts += f"Cap: {format_inr(mandate.spending_cap_amount)}\n"
+    facts += f"Valid From: {format_ts(mandate.valid_from)}\n"
+    facts += f"Valid Until: {format_ts(mandate.valid_until)}\n"
 
     facts += f"\nOrder ID: {order.id}\n"
-    facts += f"Order Amount: INR {_format_amount(order.amount)}\n"
-    facts += f"Placed At: {_format_timestamp(order.placed_at)}\n"
-    facts += f"Fulfilled At: {_format_timestamp(order.fulfilled_at)}\n"
+    facts += f"Order Amount: {format_inr(order.amount)}\n"
+    facts += f"Placed At: {format_ts(order.placed_at)}\n"
+    facts += f"Fulfilled At: {format_ts(order.fulfilled_at)}\n"
 
     facts += f"\nDispute Reason: {dispute.reason_code}\n"
     facts += "\nAgent Actions (Chronological):\n"
     for a in actions:
-        facts += f"- {_format_timestamp(a.timestamp)}: {a.action_type} - {a.item_description} (INR {_format_amount(a.amount)})\n"
+        facts += f"- {format_ts(a.timestamp)}: {a.action_type} - {a.item_description} ({format_inr(a.amount)})\n"
     return facts
 
 def draft_narrative(mandate: Mandate, actions: List[AgentAction], order: Order, dispute: Dispute) -> str:

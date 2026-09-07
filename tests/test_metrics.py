@@ -1,5 +1,4 @@
 # pyrefly: ignore [missing-import, missing-module]
-import pytest
 import sqlite3
 from src.metrics import compute_metrics
 

@@ -6,10 +6,14 @@ from src.rules_engine import evaluate_confidence
 from src.evidence_writer import draft_narrative, perform_grounding_check
 from src.models import Decision, EvidencePacket
 
-def process_dispute(conn, dispute_id: str):
-    dispute = db.get_dispute_by_id(conn, dispute_id)
+def process_dispute(conn, dispute_or_id):
+    if isinstance(dispute_or_id, str):
+        dispute = db.get_dispute_by_id(conn, dispute_or_id)
+    else:
+        dispute = dispute_or_id
+        
     if not dispute:
-        raise ValueError(f"Dispute {dispute_id} not found")
+        raise ValueError(f"Dispute {dispute_or_id} not found")
         
     db.clear_decision_state(conn, dispute.id)
         

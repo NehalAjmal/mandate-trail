@@ -8,11 +8,7 @@ import os
 
 from src.metrics import compute_metrics
 from src import db
-
-DB_PATH = "data/mandate_trail.db"
-
-def get_conn():
-    return sqlite3.connect(DB_PATH)
+from src.utils import format_inr, format_ts
 
 st.set_page_config(page_title="Mandate Trail", layout="wide")
 st.title("Mandate Trail")
@@ -22,29 +18,11 @@ if "selected_dispute_id" not in st.session_state:
 
 tab_queue, tab_metrics = st.tabs(["Queue", "Metrics"])
 
-def format_inr(paise):
-    return f"₹{paise/100:,.2f}"
-
-def format_ts(ts):
-    from datetime import datetime, timezone
-    if not ts: return "None"
-    return datetime.fromtimestamp(ts, timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
-
 def render_queue():
-    conn = get_conn()
+    conn = db.get_connection()
     
-    query = """
-    SELECT 
-        d.id as dispute_id,
-        d.reason_code,
-        d.amount,
-        dec.confidence_score,
-        dec.recommended_action,
-        d.status as razorpay_status
-    FROM disputes d
-    LEFT JOIN decisions dec ON d.id = dec.dispute_id
-    """
-    df = pd.read_sql_query(query, conn)
+    rows = db.get_queue_view(conn)
+    df = pd.DataFrame(rows, columns=['dispute_id', 'reason_code', 'amount', 'confidence_score', 'recommended_action', 'razorpay_status'])
     conn.close()
     
     if df.empty:
@@ -86,7 +64,7 @@ def render_detail(dispute_id):
         st.session_state.selected_dispute_id = None
         st.rerun()
         
-    conn = get_conn()
+    conn = db.get_connection()
     dispute = db.get_dispute_by_id(conn, dispute_id)
     order = db.get_order_by_id(conn, dispute.order_id)
     mandate = db.get_mandate_by_id(conn, order.mandate_id)
@@ -94,7 +72,7 @@ def render_detail(dispute_id):
     
     decision = db.get_decision_for_dispute(conn, dispute_id)
     evidence_packet = db.get_evidence_packet_for_dispute(conn, dispute_id)
-    audits = conn.execute("SELECT * FROM audit_log WHERE dispute_id=? ORDER BY created_at ASC", (dispute_id,)).fetchall()
+    audits = db.get_audit_log_for_dispute(conn, dispute_id)
     
     if not decision:
         st.warning("No decision found.")
@@ -172,13 +150,13 @@ def render_detail(dispute_id):
             st.rerun()
             
     with st.expander("Raw Audit Log"):
-        logs = [{"event_type": row[2], "payload": json.loads(row[3]), "time": format_ts(row[4])} for row in audits]
+        logs = [{"event_type": row.event_type, "payload": json.loads(row.event_payload), "time": format_ts(row.created_at)} for row in audits]
         st.json(logs)
         
     conn.close()
 
 def render_metrics():
-    conn = get_conn()
+    conn = db.get_connection()
     metrics = compute_metrics(conn)
     
     col1, col2, col3 = st.columns(3)
@@ -189,17 +167,7 @@ def render_metrics():
     st.markdown("*(False positives represent cases with card-network penalty risk and wasted ops time on a case that shouldn't have been fought)*")
     
     st.markdown("### Held-Out Records (20)")
-    query = """
-    SELECT 
-        d.id as dispute_id,
-        dec.recommended_action,
-        d.ground_truth_label,
-        CASE WHEN dec.recommended_action = d.ground_truth_label THEN 'Yes' ELSE 'No' END as matched
-    FROM disputes d
-    JOIN decisions dec ON d.id = dec.dispute_id
-    WHERE d.is_held_out = 1
-    """
-    df = pd.read_sql_query(query, conn)
+    df = pd.DataFrame(metrics["raw_data"])
     st.dataframe(df, hide_index=True)
     
     conn.close()

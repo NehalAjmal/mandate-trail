@@ -50,7 +50,7 @@ def run_all():
 
     for d in disputes:
         try:
-            decision = process_dispute(conn, d.id)
+            decision = process_dispute(conn, d)
             success_count += 1
         except Exception as e:
             print(f"Crash on {d.id}: {str(e)}")
